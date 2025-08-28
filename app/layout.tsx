@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "UpMonitor - Website Status & Uptime Dashboard",
   description: "Check your website's status, response time, and uptime from multiple regions — all in one powerful dashboard.",
   icons: {
-    icon: "./globe.png",
+    icon: "/globe.png",
   }
 }
 
