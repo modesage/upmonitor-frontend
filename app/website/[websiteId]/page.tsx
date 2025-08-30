@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Globe, ArrowLeft, ExternalLink, Clock, CheckCircle, XCircle } from 'lucide-react'
 import { BACKEND_URL } from "@/lib/utils"
 import axios from "axios"
+import DeleteConfirmationDialog from "@/components/DeleteConfirmationDialog"
 
 interface WebsiteTick {
     id: string
@@ -28,6 +29,8 @@ export default function WebsitePage() {
     const router = useRouter()
     const [website, setWebsite] = useState<WebsiteDetails | null>(null)
     const [loading, setLoading] = useState(true)
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+    const [isDeleting, setIsDeleting] = useState(false)
 
     const fetchWebsiteDetails = useCallback(async () => {
         const token = localStorage.getItem("token")
@@ -47,9 +50,7 @@ export default function WebsitePage() {
                 headers: { Authorization: token }
             })
 
-            if (!res.data) {
-                throw new Error("Empty response from server")
-            }
+            if (!res.data) throw new Error("Empty response from server")
 
             setWebsite({
                 id: res.data.id,
@@ -66,34 +67,44 @@ export default function WebsitePage() {
 
     useEffect(() => {
         fetchWebsiteDetails()
-        const interval = setInterval(fetchWebsiteDetails, 60 * 1000) //every minute fetch website details
+        const interval = setInterval(fetchWebsiteDetails, 60 * 1000)
         return () => clearInterval(interval)
     }, [fetchWebsiteDetails])
 
+    const handleDeleteWebsite = async () => {
+        const token = localStorage.getItem("token")
+        if (!token || !website) return
+
+        try {
+            setIsDeleting(true)
+            const res = await fetch(`${BACKEND_URL}/website/${website.id}`, {
+                method: "DELETE",
+                headers: { Authorization: token },
+            })
+
+            if (res.ok) {
+                router.push("/dashboard")
+            } else {
+                console.error("Failed to delete website")
+            }
+        } catch (err) {
+            console.error("Error deleting website:", err)
+        } finally {
+            setIsDeleting(false)
+        }
+    }
+
     const getStatusBadge = (status?: string) => {
         if (status === "Up") {
-          return (
-            <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
-              <CheckCircle className="w-3 h-3 mr-1" />
-              Up
+            return <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
+                <CheckCircle className="w-3 h-3 mr-1" />Up
             </Badge>
-          )
         } else if (status === "Down") {
-          return (
-            <Badge variant="destructive">
-              <XCircle className="w-3 h-3 mr-1" />
-              Down
-            </Badge>
-          )
+            return <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" />Down</Badge>
         } else {
-          return (
-            <Badge variant="outline">
-              <Clock className="w-3 h-3 mr-1" />
-              Checking...
-            </Badge>
-          )
+            return <Badge variant="outline"><Clock className="w-3 h-3 mr-1" />Checking...</Badge>
         }
-      }
+    }
 
     const getTickIndicator = (status: "Up" | "Down" | "Checking", index: number) => (
         <div
@@ -120,8 +131,7 @@ export default function WebsitePage() {
                 <div className="text-center">
                     <h1 className="text-2xl font-bold mb-4">Website not found</h1>
                     <Button onClick={() => router.push("/dashboard")}>
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        Back to Dashboard
+                        <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
                     </Button>
                 </div>
             </div>
@@ -132,7 +142,6 @@ export default function WebsitePage() {
     const currentResponseTime = website.ticks[0]?.response_time_ms || 0
     const lastChecked = website.ticks[0]?.createdAt || website.createdAt
     const last10Ticks = website.ticks.slice(0, 10)
-
     const upTicks = last10Ticks.filter(tick => tick.status === "Up").length
     const uptimePercentage = last10Ticks.length ? (upTicks / last10Ticks.length) * 100 : 0
 
@@ -142,8 +151,7 @@ export default function WebsitePage() {
                 <div className="container mx-auto px-4 py-4 flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                         <Button className="cursor-pointer" variant="ghost" onClick={() => router.push("/dashboard")}>
-                            <ArrowLeft className="w-4 h-4 mr-2" />
-                            Back to Dashboard
+                            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
                         </Button>
                         <div className="flex items-center space-x-2">
                             <Globe className="h-6 w-6 text-primary" />
@@ -157,16 +165,22 @@ export default function WebsitePage() {
                 <Card className="mb-8">
                     <CardHeader>
                         <div className="flex items-center justify-between">
-                            <div>
-                                <CardTitle className="text-2xl">{website.url}</CardTitle>
-                            </div>
+                            <CardTitle className="text-2xl">{website.url}</CardTitle>
                             <div className="flex items-center space-x-4">
                                 {getStatusBadge(currentStatus)}
                                 <Button variant="outline" size="sm" asChild>
                                     <a href={website.url} target="_blank" rel="noopener noreferrer">
-                                        <ExternalLink className="w-4 h-4 mr-2" />
-                                        Visit Site
+                                        <ExternalLink className="w-4 h-4 mr-2" /> Visit Site
                                     </a>
+                                </Button>
+                                <Button
+                                    className="cursor-pointer"
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => setIsDeleteDialogOpen(true)}
+                                    disabled={isDeleting}
+                                >
+                                    {isDeleting ? "Deleting..." : "Delete Website"}
                                 </Button>
                             </div>
                         </div>
@@ -174,33 +188,29 @@ export default function WebsitePage() {
                 </Card>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    {[
-                        {
-                            title: "Status",
-                            icon: currentStatus === "Up"
-                                ? <CheckCircle className="h-4 w-4 text-green-500" />
-                                : currentStatus === "Down"
-                                ? <XCircle className="h-4 w-4 text-red-500" />
-                                : <Clock className="h-4 w-4 text-muted-foreground" />,
-                            value: currentStatus,
-                            color: currentStatus === "Up" ? "text-green-600" : currentStatus === "Down" ? "text-red-600" : "text-muted-foreground"
-                        },
-                        {
-                            title: "Response Time",
-                            icon: <Clock className="h-4 w-4 text-muted-foreground" />,
-                            value: currentStatus === "Up" ? `${currentResponseTime}ms` : "—"
-                        },
-                        {
-                            title: "Uptime (Last 10)",
-                            icon: <Globe className="h-4 w-4 text-muted-foreground" />,
-                            value: `${uptimePercentage.toFixed(1)}%`
-                        },
-                        {
-                            title: "Last Checked",
-                            icon: <Clock className="h-4 w-4 text-muted-foreground" />,
-                            value: new Date(lastChecked).toLocaleString()
-                        }
-                    ].map((stat, i) => (
+                    {[{
+                        title: "Status",
+                        icon: currentStatus === "Up" ? <CheckCircle className="h-4 w-4 text-green-500" />
+                            : currentStatus === "Down" ? <XCircle className="h-4 w-4 text-red-500" />
+                            : <Clock className="h-4 w-4 text-muted-foreground" />,
+                        value: currentStatus,
+                        color: currentStatus === "Up" ? "text-green-600" : currentStatus === "Down" ? "text-red-600" : "text-muted-foreground"
+                    },
+                    {
+                        title: "Response Time",
+                        icon: <Clock className="h-4 w-4 text-muted-foreground" />,
+                        value: currentStatus === "Up" ? `${currentResponseTime}ms` : "—"
+                    },
+                    {
+                        title: "Uptime (Last 10)",
+                        icon: <Globe className="h-4 w-4 text-muted-foreground" />,
+                        value: `${uptimePercentage.toFixed(1)}%`
+                    },
+                    {
+                        title: "Last Checked",
+                        icon: <Clock className="h-4 w-4 text-muted-foreground" />,
+                        value: new Date(lastChecked).toLocaleString()
+                    }].map((stat, i) => (
                         <Card key={i}>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
@@ -216,9 +226,7 @@ export default function WebsitePage() {
                 <Card>
                     <CardHeader>
                         <CardTitle>Recent Status History</CardTitle>
-                        <CardDescription>
-                            Last 10 status checks (newest to oldest)
-                        </CardDescription>
+                        <CardDescription>Last 10 status checks (newest to oldest)</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
@@ -247,11 +255,7 @@ export default function WebsitePage() {
                                     {last10Ticks.map((tick) => (
                                         <div key={tick.id} className="flex items-center justify-between py-2 px-3 rounded-md bg-muted/50">
                                             <div className="flex items-center space-x-3">
-                                                {tick.status === "Up" ? (
-                                                    <CheckCircle className="w-4 h-4 text-green-500" />
-                                                ) : (
-                                                    <XCircle className="w-4 h-4 text-red-500" />
-                                                )}
+                                                {tick.status === "Up" ? <CheckCircle className="w-4 h-4 text-green-500" /> : <XCircle className="w-4 h-4 text-red-500" />}
                                                 <span className="text-sm font-medium">{tick.status}</span>
                                             </div>
                                             <div className="flex items-center space-x-4 text-sm text-muted-foreground">
@@ -266,6 +270,17 @@ export default function WebsitePage() {
                     </CardContent>
                 </Card>
             </div>
+
+            <DeleteConfirmationDialog
+                open={isDeleteDialogOpen}
+                onClose={() => setIsDeleteDialogOpen(false)}
+                onConfirm={() => {
+                    setIsDeleteDialogOpen(false)
+                    handleDeleteWebsite()
+                }}
+                title="Delete Website"
+                description="This action is irreversible. Deleting this website will remove it from monitoring."
+            />
         </div>
     )
 }
