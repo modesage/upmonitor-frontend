@@ -148,46 +148,52 @@ export default function WebsitePage() {
     return (
         <div className="min-h-screen bg-background">
             <header className="border-b">
-                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                        <Button className="cursor-pointer" variant="ghost" onClick={() => router.push("/dashboard")}>
-                            <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
+                <div className="container mx-auto px-4 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="w-full sm:w-auto">
+                        <Button
+                            variant="ghost"
+                            onClick={() => router.push("/dashboard")}
+                            className="cursor-pointer w-full sm:w-auto justify-center sm:justify-start"
+                        >
+                            <ArrowLeft className="w-4 h-4 mr-2" /> Back
                         </Button>
-                        <div className="flex items-center space-x-2">
-                            <Globe className="h-6 w-6 text-primary" />
-                            <span className="text-xl font-bold">Website Details</span>
-                        </div>
+                    </div>
+
+                    <div className="flex items-center justify-center sm:justify-start space-x-2">
+                        <Globe className="h-5 w-5 text-primary" />
+                        <span className="text-lg sm:text-xl font-bold">Website Details</span>
                     </div>
                 </div>
             </header>
 
-            <div className="container mx-auto px-4 py-8">
-                <Card className="mb-8">
+
+            <div className="container mx-auto px-4 py-6 sm:py-8">
+                <Card className="mb-6 sm:mb-8">
                     <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <CardTitle className="text-2xl">{website.url}</CardTitle>
-                            <div className="flex items-center space-x-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <CardTitle className="text-lg sm:text-2xl break-words">{website.url}</CardTitle>
+                            <div className="flex flex-wrap gap-2 sm:flex-nowrap">
                                 {getStatusBadge(currentStatus)}
-                                <Button variant="outline" size="sm" asChild>
+                                <Button variant="outline" size="sm" asChild className="w-full sm:w-auto">
                                     <a href={website.url} target="_blank" rel="noopener noreferrer">
-                                        <ExternalLink className="w-4 h-4 mr-2" /> Visit Site
+                                        <ExternalLink className="w-4 h-4 mr-1" /> Visit
                                     </a>
                                 </Button>
                                 <Button
-                                    className="cursor-pointer"
                                     variant="destructive"
                                     size="sm"
                                     onClick={() => setIsDeleteDialogOpen(true)}
                                     disabled={isDeleting}
+                                    className="cursor-pointer w-full sm:w-auto"
                                 >
-                                    {isDeleting ? "Deleting..." : "Delete Website"}
+                                    {isDeleting ? "Deleting..." : "Delete"}
                                 </Button>
                             </div>
                         </div>
                     </CardHeader>
                 </Card>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
                     {[{
                         title: "Status",
                         icon: currentStatus === "Up" ? <CheckCircle className="h-4 w-4 text-green-500" />
@@ -217,7 +223,7 @@ export default function WebsitePage() {
                                 {stat.icon}
                             </CardHeader>
                             <CardContent>
-                                <div className={`text-2xl font-bold ${stat.color || ""}`}>{stat.value}</div>
+                                <div className={`text-xl sm:text-2xl font-bold ${stat.color || ""}`}>{stat.value}</div>
                             </CardContent>
                         </Card>
                     ))}
@@ -225,46 +231,47 @@ export default function WebsitePage() {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Recent Status History</CardTitle>
-                        <CardDescription>Last 10 status checks (newest to oldest)</CardDescription>
+                        <CardTitle className="text-lg sm:text-xl">Recent Status</CardTitle>
+                        <CardDescription>Last 10 checks</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            <div className="flex items-center space-x-2">
-                                <span className="text-sm font-medium w-16">Status:</span>
-                                <div className="flex space-x-1">
-                                    {last10Ticks.map((tick, index) =>
-                                        getTickIndicator(tick.status, index)
-                                    )}
+                    <CardContent className="space-y-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                            <span className="text-sm font-medium">Status:</span>
+                            <div className="flex flex-wrap gap-1">
+                                {last10Ticks.map((tick, index) => getTickIndicator(tick.status, index))}
+                            </div>
+                            <div className="flex items-center space-x-3 mt-2 sm:mt-0 sm:ml-4">
+                                <div className="flex items-center space-x-1 text-xs">
+                                    <div className="w-3 h-3 bg-green-500 rounded-sm" />
+                                    <span>Up</span>
                                 </div>
-                                <div className="flex items-center space-x-4 ml-4">
-                                    <div className="flex items-center space-x-1">
-                                        <div className="w-3 h-3 bg-green-500 rounded-sm"></div>
-                                        <span className="text-xs text-muted-foreground">Up</span>
-                                    </div>
-                                    <div className="flex items-center space-x-1">
-                                        <div className="w-3 h-3 bg-red-500 rounded-sm"></div>
-                                        <span className="text-xs text-muted-foreground">Down</span>
-                                    </div>
+                                <div className="flex items-center space-x-1 text-xs">
+                                    <div className="w-3 h-3 bg-red-500 rounded-sm" />
+                                    <span>Down</span>
                                 </div>
                             </div>
+                        </div>
 
+                        <div className="space-y-2">
+                            <h4 className="text-sm font-medium">Detailed History</h4>
                             <div className="space-y-2">
-                                <h4 className="text-sm font-medium">Detailed History</h4>
-                                <div className="space-y-1">
-                                    {last10Ticks.map((tick) => (
-                                        <div key={tick.id} className="flex items-center justify-between py-2 px-3 rounded-md bg-muted/50">
-                                            <div className="flex items-center space-x-3">
-                                                {tick.status === "Up" ? <CheckCircle className="w-4 h-4 text-green-500" /> : <XCircle className="w-4 h-4 text-red-500" />}
-                                                <span className="text-sm font-medium">{tick.status}</span>
-                                            </div>
-                                            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                                                <span>{tick.status === "Up" ? `${tick.response_time_ms}ms` : "—"}</span>
-                                                <span>{new Date(tick.createdAt).toLocaleString()}</span>
-                                            </div>
+                                {last10Ticks.map((tick) => (
+                                    <div
+                                        key={tick.id}
+                                        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 py-2 px-3 rounded-md bg-muted/50"
+                                    >
+                                        <div className="flex items-center space-x-2">
+                                            {tick.status === "Up"
+                                                ? <CheckCircle className="w-4 h-4 text-green-500" />
+                                                : <XCircle className="w-4 h-4 text-red-500" />}
+                                            <span className="text-sm font-medium">{tick.status}</span>
                                         </div>
-                                    ))}
-                                </div>
+                                        <div className="flex flex-wrap gap-3 text-xs sm:text-sm text-muted-foreground">
+                                            <span>{tick.status === "Up" ? `${tick.response_time_ms}ms` : "—"}</span>
+                                            <span>{new Date(tick.createdAt).toLocaleString()}</span>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </CardContent>
