@@ -148,20 +148,22 @@ export default function WebsitePage() {
     return (
         <div className="min-h-screen bg-background">
             <header className="border-b">
-                <div className="container mx-auto px-4 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div className="w-full sm:w-auto">
-                        <Button
-                            variant="ghost"
-                            onClick={() => router.push("/dashboard")}
-                            className="cursor-pointer w-full sm:w-auto justify-center sm:justify-start"
-                        >
-                            <ArrowLeft className="w-4 h-4 mr-2" /> Back
-                        </Button>
+                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+                    {/* Left: Back Button */}
+                    <div className="flex-shrink-0">
+                    <Button
+                        variant="ghost"
+                        onClick={() => router.push("/dashboard")}
+                        className="cursor-pointer flex items-center"
+                    >
+                        <ArrowLeft className="w-4 h-4 mr-2" /> Back
+                    </Button>
                     </div>
 
-                    <div className="flex items-center justify-center sm:justify-start space-x-2">
-                        <Globe className="h-5 w-5 text-primary" />
-                        <span className="text-lg sm:text-xl font-bold">Website Details</span>
+                    {/* Right: Title */}
+                    <div className="flex-shrink-0 flex items-center space-x-2">
+                    <Globe className="h-5 w-5 text-primary" />
+                    <span className="text-lg sm:text-xl font-bold">Website Details</span>
                     </div>
                 </div>
             </header>
@@ -198,7 +200,7 @@ export default function WebsitePage() {
                         title: "Status",
                         icon: currentStatus === "Up" ? <CheckCircle className="h-4 w-4 text-green-500" />
                             : currentStatus === "Down" ? <XCircle className="h-4 w-4 text-red-500" />
-                            : <Clock className="h-4 w-4 text-muted-foreground" />,
+                                : <Clock className="h-4 w-4 text-muted-foreground" />,
                         value: currentStatus,
                         color: currentStatus === "Up" ? "text-green-600" : currentStatus === "Down" ? "text-red-600" : "text-muted-foreground"
                     },
