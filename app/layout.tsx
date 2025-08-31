@@ -1,9 +1,10 @@
-import type { Metadata } from "next"
-import { Inter } from 'next/font/google'
-import "./globals.css"
-import { ThemeProvider } from "@/providers/theme-provider"
+import type { Metadata } from "next";
+import { Inter } from 'next/font/google';
+import "./globals.css";
+import { ThemeProvider } from "@/providers/theme-provider";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "UpMonitor - Website Status & Uptime Dashboard",
@@ -28,8 +29,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          {/* Invisible Speed Insights tracker */}
+          <div style={{ width: 0, height: 0, overflow: 'hidden', position: 'absolute' }}>
+            <SpeedInsights />
+          </div>
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }
