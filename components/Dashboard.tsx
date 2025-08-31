@@ -260,12 +260,14 @@ export default function DashboardPage({ onSignOut, onDeleteAccount, isDeletingAc
             {/* Mobile cards */}
             <div className="grid gap-3 sm:hidden">
               {websites.map((site) => (
-                <Card key={site.id} className="p-3">
+                <Card key={site.id} className="p-3 break-words overflow-hidden">
                   <div className="flex justify-between items-center gap-2">
-                    <span className="truncate text-sm font-medium">{site.url}</span>
-                    {getStatusBadge(site.status)}
+                    <span className="truncate text-sm font-medium max-w-[70%]">{site.url}</span>
+                    <div className="flex-shrink-0">
+                      {getStatusBadge(site.status)}
+                    </div>
                   </div>
-                  <div className="text-xs text-muted-foreground mt-1">
+                  <div className="text-xs text-muted-foreground mt-1 truncate">
                     {site.status === "up" ? `${site.responseTime}ms` : "—"} •{" "}
                     {new Date(site.lastChecked).toLocaleString()}
                   </div>
