@@ -78,15 +78,15 @@ export default function SignInPage() {
           <div className="space-y-3">
             <div className="flex items-center justify-center md:justify-start space-x-2">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="text-sm sm:text-base text-muted-foreground">99.9% uptime guarantee</span>
+              <span className="text-sm sm:text-base text-muted-foreground">99.9% Uptime Guarantee</span>
             </div>
             <div className="flex items-center justify-center md:justify-start space-x-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              <span className="text-sm sm:text-base text-muted-foreground">Real-time monitoring</span>
+              <span className="text-sm sm:text-base text-muted-foreground">Continuous Monitoring</span>
             </div>
             <div className="flex items-center justify-center md:justify-start space-x-2">
               <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-              <span className="text-sm sm:text-base text-muted-foreground">Instant alerts</span>
+              <span className="text-sm sm:text-base text-muted-foreground">Multi-Region Checks</span>
             </div>
           </div>
         </div>
