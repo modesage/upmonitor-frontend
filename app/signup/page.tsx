@@ -82,15 +82,15 @@ export default function SignUpPage() {
           <div className="space-y-3">
             <div className="flex items-center justify-center md:justify-start space-x-2">
               <CheckCircle className="w-5 h-5 text-green-500" />
-              <span className="text-sm sm:text-base">Monitor websites for free</span>
+              <span className="text-sm sm:text-base">Monitor Websites for Free</span>
             </div>
             <div className="flex items-center justify-center md:justify-start space-x-2">
               <CheckCircle className="w-5 h-5 text-green-500" />
-              <span className="text-sm sm:text-base">Get timely updates</span>
+              <span className="text-sm sm:text-base">Receive Timely Updates</span>
             </div>
             <div className="flex items-center justify-center md:justify-start space-x-2">
               <CheckCircle className="w-5 h-5 text-green-500" />
-              <span className="text-sm sm:text-base">No credit card required</span>
+              <span className="text-sm sm:text-base">No Credit Card Required</span>
             </div>
           </div>
         </div>
