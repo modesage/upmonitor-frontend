@@ -86,7 +86,7 @@ export default function SignUpPage() {
             </div>
             <div className="flex items-center justify-center md:justify-start space-x-2">
               <CheckCircle className="w-5 h-5 text-green-500" />
-              <span className="text-sm sm:text-base">30-second check intervals</span>
+              <span className="text-sm sm:text-base">Get timely updates</span>
             </div>
             <div className="flex items-center justify-center md:justify-start space-x-2">
               <CheckCircle className="w-5 h-5 text-green-500" />
